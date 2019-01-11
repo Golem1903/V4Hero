@@ -19,16 +19,13 @@ class Rhythm
     SongController *songController;
     std::string currentThemeName;
 
-    /// Drums ///
-
-
-
-
-    /// Low and high range for BAD, GOOD and BEST hits (in milliseconds) ///
-    int low_range = 300; ///Anything below that range will be treated as BAD hit
-    int high_range = 425; ///Anything between this and low range will be treated as GOOD hit. Higher will be treated as BEST hit.
-
-
+    /// Low and high range for BAD, GOOD and BEST hits (in milliseconds, 250 is the center point, 250-range = ms gap) ///
+    int low_range = 150; ///Anything below that range will be treated as BAD hit
+    int high_range = 215; ///Anything between this and low range will be treated as GOOD hit. Higher will be treated as BEST hit.
+    int cycle = 0;
+    int cycle_mode = 0;
+    bool start = false;
+    bool combobreak = false;
 
     /// Initialize sounds ///
     sf::SoundBuffer b_fever_fail;
@@ -43,17 +40,13 @@ class Rhythm
 
     /// Initialize clocks ///
     sf::Clock rhythmClock; ///Main clock for Rhythm purposes
-    sf::Clock commandTimeout; ///Timeout clock to break the combo after not inputting any drum for a while
-    sf::Clock beforeFeverClock; ///Clock used while inputting first commands, later it is useless
-
+    sf::Clock startClock; ///For start synchronization
+    sf::Clock breakClock; ///For correct combo break sync
 
 
     /// Initialize Rhythm System values ///
     int combo = 1; ///Rhythm combo, main navigator through BGM
     float masterTimer = 500; ///Master Timer, determines the quality of hit drums
-    int masterTimerMode = 0; ///Mode of Master Timer, for synchronizing the time ranges properly
-    int beatValue = 1; ///Value for beats (drums) in a command (1, 2, 3, 4)
-    int commandValue = 1; ///Value for current command (1 - Patapons sing, 2 - Player input)
     bool drumAlreadyHit = false; ///Made to check if drum has already been hit in 1 beat (to prevent from hitting multiple drums at a time)
     float flicker = 0; ///For beat frame flickering
 
@@ -76,10 +69,9 @@ class Rhythm
 
 
 
-    /// Perfction calculator ///
+    /// Perfection calculator ///
     float accuracy = 0; ///value for calculating the accuracy
     int acc_count = 3; ///value for determining on how far back should the accuracy calculation system go in commands
-
 
 
     /// Drums in-game ///
@@ -90,14 +82,11 @@ class Rhythm
     float fps = 60;
 
 
-
-
     /// Config and Keybindings ///
     Config config;
     std::map<int,bool> keyMap;
     RhythmController rhythmController;
     std::string current_song = "";
-
 
 
     /// Visuals ///
