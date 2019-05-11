@@ -16,9 +16,10 @@ void Background::setCamera(Camera newCamera)
     camera = newCamera;
 }
 
-void Background::Load(string bg_name)
+void Background::Load(string bg_name,Config &thisConfigs)
 {
-    cout<<"Background loaded: "<<bg_name;
+    thisConfig = &thisConfigs;
+    thisConfig->debugOut->DebugMessage("Background loaded: "+bg_name);
     v_background.clear();
     vx_pos.clear();
     vx_pos.clear();
@@ -40,6 +41,8 @@ void Background::Load(string bg_name)
             string vx_params = buff.substr(buff.find_first_of(":")+1);
             vector<string> v_vxparams = Func::Split(vx_params,';');
 
+            float ratioY = thisConfig->GetInt("resY") / float(720);
+
             for(int i=0; i<v_vxparams.size(); i++)
             {
                 vector<string> tmp = Func::Split(v_vxparams[i],',');
@@ -48,7 +51,12 @@ void Background::Load(string bg_name)
                 sf::Color tmp_color;
 
                 tmp_vector.x = 0;
-                tmp_vector.y = atof(tmp[0].c_str());
+                tmp_vector.y = atof(tmp[0].c_str()) * ratioY;
+
+                if(tmp[0] == "-1")
+                {
+                    tmp_vector.y = thisConfig->GetInt("resY")-110;
+                }
 
                 tmp_color.r = atoi(tmp[1].c_str());
                 tmp_color.g = atoi(tmp[2].c_str());
@@ -56,8 +64,13 @@ void Background::Load(string bg_name)
 
                 sf::Vector2f tmp_vector2;
 
-                tmp_vector2.x = 1280;
-                tmp_vector2.y = atof(tmp[0].c_str());
+                tmp_vector2.x = thisConfig->GetInt("resX");
+                tmp_vector2.y = atof(tmp[0].c_str()) * ratioY;
+
+                if(tmp[0] == "-1")
+                {
+                    tmp_vector2.y = thisConfig->GetInt("resY")-110;
+                }
 
                 vx_pos.push_back(tmp_vector);
                 vx_color.push_back(tmp_color);
@@ -71,7 +84,7 @@ void Background::Load(string bg_name)
         }
         else
         {
-            cout << "Loading texture..." << endl;
+            thisConfig->debugOut->DebugMessage("Loading texture...\n");
 
             vector<string> v_params = Func::Split(buff,',');
 
@@ -85,7 +98,7 @@ void Background::Load(string bg_name)
             s_temp.setTexture(t_temp);
             s_temp.setOrigin(10000,s_temp.getLocalBounds().height);
             s_temp.setColor(sf::Color(atoi(v_params[3].c_str()),atoi(v_params[4].c_str()),atoi(v_params[5].c_str()),255));
-            s_temp.setPosition(-1000,610);
+            s_temp.setPosition(-1000,thisConfig->GetInt("resY")-110);
 
             t_background.push_back(t_temp);
             s_background.push_back(s_temp);
@@ -114,7 +127,7 @@ void Background::Draw(sf::RenderWindow& window)
     {
         s_background[i].setTexture(t_background[i]);
 
-        s_background[i].setPosition(-(camera.camera_x*background_xspeed[i]) / 25,610);
+        s_background[i].setPosition(-(background_xspeed[i]*camera.camera_x)-(background_xspeed[i]*camera.manual_x)-(background_xspeed[i]*camera.debug_x),window.getSize().y-110);
         window.draw(s_background[i]);
     }
 }

@@ -9,11 +9,11 @@ MissionController::MissionController()
 
 }
 void MissionController::Initialise(Config &config, std::map<int,bool> &keyMap,std::string backgroundString){
-    test_bg.Load(backgroundString);//config.GetString("debugBackground"));
+    test_bg.Load(backgroundString, config);//config.GetString("debugBackground"));
 
     missionKeyMap = &keyMap;
     missionConfig = &config;
-
+    patapon.LoadConfig(&config);
 }
 void MissionController::StartMission(std::string songName){
     rhythm.LoadTheme(songName); // missionConfig->GetString("debugTheme")
@@ -35,6 +35,7 @@ void MissionController::Update(sf::RenderWindow &window, float fps){
         test_bg.setCamera(camera);
         test_bg.Draw(window);
         patapon.x = camera.followobject_x;
+        patapon.y = window.getSize().y-200;
         patapon.fps = fps;
 
         // TODO: at some point some pointer shenanigans is required to make these be a reference to v4core's ones too.

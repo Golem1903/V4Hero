@@ -15,8 +15,10 @@ class V4Core
     private:
 
     Config config;
+    DebugOut debugOut;
     //MissionController currentController;
     MainMenu mainMenu;
+
 
 
 
@@ -32,6 +34,7 @@ class V4Core
     bool leftkey=false,rightkey=false,upkey=false,downkey=false;
 
     public:
+        MissionController currentController;
     V4Core();
     void Init();
 };
